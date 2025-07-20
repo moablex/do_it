@@ -6,12 +6,19 @@ class SearchTask extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(width: 1),
       ),
-      child: TextField(),
+      child: TextField(
+        decoration: InputDecoration(
+          icon: Icon(Icons.search),
+          hintText: 'Search Task',
+          border: InputBorder.none,
+        ),
+      ),
     );
   }
 }
