@@ -44,14 +44,33 @@ class Task {
 }
 
 class TaskTile extends StatelessWidget {
+  ProgressIndicator indicator = new CircularProgressIndicator(
+    strokeWidth: 5.0,
+    color: Colors.deepPurple,
+    backgroundColor: Colors.deepPurple.shade100,
+    value: 0.5,
+  );
   final Task task;
-  const TaskTile({super.key, required this.task});
+  TaskTile({super.key, required this.task});
 
   @override
   Widget build(BuildContext context) {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: ListTile(title: Text(this.task.title)),
+      child: ListTile(
+        title: Text(
+          this.task.title,
+          style: TextStyle(
+            fontSize: 24.0,
+            fontWeight: FontWeight.bold,
+            color: const Color.fromARGB(255, 56, 57, 58), // Color of the text
+          ),
+        ),
+        subtitle: Row(
+          children: [Icon(Icons.watch_later_rounded), Text('  8:00 - 10:00')],
+        ),
+        trailing: indicator,
+      ),
     );
   }
 }
