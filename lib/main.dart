@@ -36,13 +36,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-
-        title: Text(widget.title),
-      ),
       bottomNavigationBar: TodoBottomNavBar(),
-      body: Center(child: const HomeScreen()),
+      //body: Center(child: Text("data")),
+      // body: SafeArea(child: const HomeScreen()),
       // This trailing comma makes auto-formatting nicer for build methods.
     );
   }

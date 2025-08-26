@@ -45,8 +45,8 @@ class Task {
 
 class TaskTile extends StatelessWidget {
   ProgressIndicator indicator = new CircularProgressIndicator(
-    strokeWidth: 5.0,
-    color: Colors.deepPurple,
+    strokeWidth: 4.0,
+    color: Colors.blue,
     backgroundColor: Colors.deepPurple.shade100,
     value: 0.5,
   );
@@ -69,7 +69,16 @@ class TaskTile extends StatelessWidget {
         subtitle: Row(
           children: [Icon(Icons.watch_later_rounded), Text('  8:00 - 10:00')],
         ),
-        trailing: indicator,
+        trailing: Stack(
+          alignment: Alignment.center,
+          children: [
+            SizedBox(height: 50, width: 50, child: indicator),
+            Text(
+              "50%",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
       ),
     );
   }
