@@ -1,3 +1,4 @@
+import 'package:do_it/features/todo/presentation/screens/task_detail.dart';
 import 'package:flutter/material.dart';
 
 class TaskList extends StatefulWidget {
@@ -14,10 +15,26 @@ class _TaskListState extends State<TaskList> {
     super.initState();
 
     _tasks = [
-      Task(id: '1', title: 'Buy groceries', isCompleted: false),
-      Task(id: '2', title: 'Walk the dog', isCompleted: true),
-      Task(id: '3', title: 'Study', isCompleted: true),
-      Task(id: '4', title: 'Play', isCompleted: true),
+      Task(
+        id: '1',
+        title: 'Buy groceries',
+        description: 'Get milk, bread, and eggs from the store.',
+      ),
+      Task(
+        id: '2',
+        title: 'Walk the dog',
+        description: 'Take the dog for a 30-minute walk in the park.',
+      ),
+      Task(
+        id: '3',
+        title: 'Study',
+        description: 'Review for the final exam in mathematics.',
+      ),
+      Task(
+        id: '4',
+        title: 'Play',
+        description: 'Spend an hour playing video games with friends.',
+      ),
     ];
   }
 
@@ -38,9 +55,15 @@ class _TaskListState extends State<TaskList> {
 class Task {
   final String id;
   String title;
+  String description;
   bool isCompleted;
 
-  Task({required this.id, required this.title, this.isCompleted = false});
+  Task({
+    required this.id,
+    required this.title,
+    required this.description,
+    this.isCompleted = false,
+  });
 }
 
 class TaskTile extends StatelessWidget {
@@ -79,6 +102,12 @@ class TaskTile extends StatelessWidget {
             ),
           ],
         ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => TaskDetail(task: task)),
+          );
+        },
       ),
     );
   }
