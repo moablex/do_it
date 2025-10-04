@@ -1,4 +1,5 @@
 import 'package:do_it/features/todo/presentation/screens/home_screen.dart';
+import 'package:do_it/features/todo/presentation/widgets/Navigation_bar.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -34,12 +36,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-
-        title: Text(widget.title),
-      ),
-      body: Center(child: const HomeScreen()),
+      bottomNavigationBar: TodoBottomNavBar(),
+      //body: Center(child: Text("data")),
+      // body: SafeArea(child: const HomeScreen()),
       // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
