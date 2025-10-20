@@ -1,3 +1,4 @@
+import 'package:do_it/features/todo/presentation/widgets/Add_Sub_Task.dart';
 import 'package:do_it/features/todo/presentation/widgets/task_list.dart';
 import 'package:flutter/material.dart';
 
@@ -48,15 +49,34 @@ class _TaskDetailState extends State<TaskDetail> {
                 'Sub Tasks',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.add_task_sharp),
-                color: Colors.blueAccent,
-                iconSize: 30,
-              ),
+              AddSubTask(),
             ],
           ),
           if (widget.task.subTasks.isEmpty) Center(child: Text('No Sub Tasks')),
+          const SizedBox(height: 8),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: LinearProgressIndicator(
+              value: 0.5,
+              backgroundColor: Colors.grey.shade300,
+              color: Colors.teal,
+              minHeight: 6,
+            ),
+          ),
+          SizedBox(height: 10),
+          Wrap(
+            spacing: 6,
+            children:
+                widget.task.tags
+                    .map(
+                      (tag) => Chip(
+                        label: Text(tag),
+                        backgroundColor: Colors.teal.shade50,
+                        labelStyle: const TextStyle(color: Colors.teal),
+                      ),
+                    )
+                    .toList(),
+          ),
         ],
       ),
     );

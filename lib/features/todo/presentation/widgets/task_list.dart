@@ -10,6 +10,10 @@ class TaskList extends StatefulWidget {
 
 class _TaskListState extends State<TaskList> {
   List<Task> _tasks = [];
+  List<String> demoTags1 = ['Spritual', 'High priority'];
+  List<String> demoTags2 = ['Financial', 'Work'];
+  List<String> demoTags3 = ['Study', 'Personal'];
+
   @override
   void initState() {
     super.initState();
@@ -19,21 +23,25 @@ class _TaskListState extends State<TaskList> {
         id: '1',
         title: 'Buy groceries',
         description: 'Get milk, bread, and eggs from the store.',
+        tags: demoTags1,
       ),
       Task(
         id: '2',
         title: 'Walk the dog',
         description: 'Take the dog for a 30-minute walk in the park.',
+        tags: demoTags2,
       ),
       Task(
         id: '3',
         title: 'Study',
         description: 'Review for the final exam in mathematics.',
+        tags: demoTags3,
       ),
       Task(
         id: '4',
         title: 'Play',
         description: 'Spend an hour playing video games with friends.',
+        tags: demoTags3,
       ),
     ];
   }
@@ -76,7 +84,7 @@ class Task {
   String description;
   bool isCompleted;
   List<String> tags;
-  DateTime startTime = DateTime.now();
+  DateTime? startTime;
   DateTime? endTime;
   double progress;
 
