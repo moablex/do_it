@@ -12,7 +12,14 @@ class _AddTaskState extends State<AddTask> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController DescriptionController = TextEditingController();
   final taskRepeatInterval = ['Hourly', 'Daily', 'Weakly', 'Monthly'];
-  List<String> taskCategories = ['Work', 'Study', 'Health', 'Spritual'];
+  List<String> taskCategories = [
+    'Work',
+    'Study',
+    'Health',
+    'Spritual',
+    'Spriual',
+    'mmmmm',
+  ];
   bool setReminder = false;
   @override
   Widget build(BuildContext context) {
@@ -61,41 +68,14 @@ class _AddTaskState extends State<AddTask> {
               DateRangeSelector(),
 
               SizedBox(height: 20),
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text('Repeat'),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(0, 122, 231, 235),
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton(
-                          borderRadius: BorderRadius.circular(15),
-                          value: taskRepeatInterval[0],
-                          items:
-                              taskRepeatInterval.map((String interval) {
-                                return DropdownMenuItem(
-                                  child: Text(interval),
-                                  value: interval,
-                                );
-                              }).toList(),
-                          onChanged: (String? Newvalue) {
-                            setState(() {});
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+
               SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Text('Remind Me'),
                   Switch(
+                    activeColor: Colors.teal,
                     value: setReminder,
                     onChanged: (bool newValue) {
                       setState(() {
@@ -114,25 +94,35 @@ class _AddTaskState extends State<AddTask> {
                     spacing: 5,
                     children:
                         taskCategories.map((category) {
-                          return InputChip(label: Text(category));
+                          return InputChip(
+                            label: Text(category),
+                            selectedColor: Colors.teal,
+                            onSelected: (value) {},
+                          );
                         }).toList(),
+                  ),
+
+                  GestureDetector(
+                    child: Icon(Icons.add, size: 20, color: Colors.teal),
+                    onTap: () {
+                      print('Add tag pressed');
+                    },
                   ),
                 ],
               ),
               SizedBox(height: 20),
 
-              Container(
-                height: 50,
-                width: 100,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: FloatingActionButton.extended(
-                  icon: Icon(Icons.add, color: Colors.white),
-                  backgroundColor: Colors.teal,
-                  onPressed: () {},
-                  label: Text('New Tag', style: TextStyle(color: Colors.white)),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Container(
+                    height: 50,
+                    width: 100,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ],
               ),
               SizedBox(height: 20),
               SizedBox(

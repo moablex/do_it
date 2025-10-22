@@ -15,67 +15,113 @@ class _TaskDetailState extends State<TaskDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Column(
+      body: Stack(
         children: [
-          SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+          Column(
             children: [
-              Text(
-                '${widget.task.title}',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              Chip(label: Text('50 % Progress')),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    '${widget.task.description}',
-                    style: TextStyle(fontSize: 16),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text(
+                    '${widget.task.title}',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
-                ),
-                SizedBox(width: 10),
-              ],
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Text(
-                'Sub Tasks',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  Chip(label: Text('50 % Progress')),
+                ],
               ),
-              AddSubTask(),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 30,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '${widget.task.description}',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                  ],
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text(
+                    'Sub Tasks',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  AddSubTask(),
+                ],
+              ),
+              if (widget.task.subTasks.isEmpty)
+                Center(child: Text('No Sub Tasks')),
+              const SizedBox(height: 8),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: LinearProgressIndicator(
+                  value: 0.5,
+                  backgroundColor: Colors.grey.shade300,
+                  color: Colors.teal,
+                  minHeight: 6,
+                ),
+              ),
+              SizedBox(height: 10),
+              Wrap(
+                spacing: 6,
+                children:
+                    widget.task.tags
+                        .map(
+                          (tag) => Chip(
+                            label: Text(tag),
+                            backgroundColor: Colors.teal.shade50,
+                            labelStyle: const TextStyle(color: Colors.teal),
+                          ),
+                        )
+                        .toList(),
+              ),
             ],
           ),
-          if (widget.task.subTasks.isEmpty) Center(child: Text('No Sub Tasks')),
-          const SizedBox(height: 8),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: LinearProgressIndicator(
-              value: 0.5,
-              backgroundColor: Colors.grey.shade300,
-              color: Colors.teal,
-              minHeight: 6,
-            ),
-          ),
-          SizedBox(height: 10),
-          Wrap(
-            spacing: 6,
-            children:
-                widget.task.tags
-                    .map(
-                      (tag) => Chip(
-                        label: Text(tag),
-                        backgroundColor: Colors.teal.shade50,
-                        labelStyle: const TextStyle(color: Colors.teal),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      maximumSize: Size(
+                        MediaQuery.of(context).size.width - 50,
+                        40,
                       ),
-                    )
-                    .toList(),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      backgroundColor: Colors.teal,
+                    ),
+                    onPressed: () {},
+                    child: Text(
+                      'Mark as completed',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+
+                  InkWell(
+                    child: Icon(Icons.delete, color: Colors.red),
+                    onTap: () {},
+                    splashColor: Colors.blue,
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
