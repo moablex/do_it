@@ -97,6 +97,8 @@ class Task {
     this.isCompleted = false,
     this.tags = const [],
     this.subTasks = const [],
+    this.startTime,
+    this.endTime,
     this.progress = 0.0,
     this.reminderTime,
   });
