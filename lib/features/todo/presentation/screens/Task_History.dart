@@ -10,19 +10,16 @@ class TaskHistory extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 20),
-                TimelineCalendar(),
-                SizedBox(height: 20),
-                TaskHistoryTIle(taskList: demoTaskList),
-              ],
-            ),
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 20),
+              TimelineCalendar(),
+              SizedBox(height: 20),
+              Expanded(child: TaskHistoryTIle(taskList: demoTaskList)),
+            ],
           ),
         ),
       ),

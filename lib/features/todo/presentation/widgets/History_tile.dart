@@ -14,7 +14,7 @@ class TaskHistoryTIle extends StatelessWidget {
     return ListView.builder(
       itemCount: taskList.length,
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: BouncingScrollPhysics(),
       itemBuilder: (context, index) {
         final task = taskList[index];
         final isFirst = index == 0;
@@ -24,6 +24,22 @@ class TaskHistoryTIle extends StatelessWidget {
           lineXY: 0.2,
           isFirst: isFirst,
           isLast: isLast,
+          beforeLineStyle: LineStyle(
+            color: Colors.indigo.withValues(
+              alpha: 0.5,
+              red: 0.2,
+              blue: 0.7,
+              green: 0.9,
+            ),
+            thickness: 3,
+          ),
+          afterLineStyle: LineStyle(color: Colors.blue, thickness: 3),
+          indicatorStyle: IndicatorStyle(
+            width: 25,
+            height: 25,
+            color: Colors.pinkAccent,
+            iconStyle: IconStyle(iconData: Icons.task_alt, color: Colors.white),
+          ),
           startChild: Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: Text(
@@ -62,6 +78,33 @@ class TaskHistoryTIle extends StatelessWidget {
                 Text(
                   task.description,
                   style: const TextStyle(color: Colors.black54),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.teal,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text(
+                        task.progress == 0
+                            ? "Not started"
+                            : task.progress < 1
+                            ? "In progrss"
+                            : "Completed",
+                      ),
+                      SizedBox(width: 6.0),
+                      Icon(
+                        task.progress == 0
+                            ? Icons.schedule
+                            : task.progress < 1
+                            ? Icons.pending
+                            : Icons.done,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
