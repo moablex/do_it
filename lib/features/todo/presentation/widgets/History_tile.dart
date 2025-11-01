@@ -1,4 +1,4 @@
-import 'package:do_it/features/todo/presentation/widgets/task_list.dart';
+import 'package:do_it/features/todo/domain/models/todo.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:timeline_tile/timeline_tile.dart';

@@ -1,4 +1,5 @@
 import 'package:do_it/features/todo/presentation/widgets/Date_Picker.dart';
+import 'package:do_it/features/todo/presentation/widgets/addNewTag.dart';
 import 'package:flutter/material.dart';
 
 class AddTask extends StatefulWidget {
@@ -18,8 +19,9 @@ class _AddTaskState extends State<AddTask> {
     'Health',
     'Spritual',
     'Spriual',
-    'mmmmm',
   ];
+
+  List<String> SelectedCategories = [];
   bool setReminder = false;
   @override
   Widget build(BuildContext context) {
@@ -43,25 +45,63 @@ class _AddTaskState extends State<AddTask> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              TextField(
-                controller: titleController,
-                decoration: InputDecoration(
-                  hintText: 'Title',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  // color: const Color.fromARGB(255, 200, 215, 240),
+                ),
+                child: TextField(
+                  controller: titleController,
+                  decoration: InputDecoration(
+                    labelText: 'Title',
+                    hintText: 'Physical Exercises',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    prefixIcon: Icon(Icons.title_outlined),
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.clear),
+                      onPressed: () {
+                        // Clear the text field
+                      },
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[100],
                   ),
+                  keyboardType: TextInputType.text,
+                  textInputAction: TextInputAction.next,
+                  style: TextStyle(fontSize: 16.0, color: Colors.black87),
                 ),
               ),
               SizedBox(height: 20),
-              TextField(
-                maxLines: 4,
-                maxLength: 4,
-                controller: DescriptionController,
-                decoration: InputDecoration(
-                  hintText: 'Description',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
+              Container(
+                // decoration: BoxDecoration(
+                //   borderRadius: BorderRadius.circular(15),
+                //   color: const Color.fromARGB(255, 200, 215, 240),
+                // ),
+                child: TextField(
+                  maxLines: 4,
+                  maxLength: 4,
+                  controller: DescriptionController,
+                  decoration: InputDecoration(
+                    labelText: 'Description',
+
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    prefixIcon: Icon(Icons.description),
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.clear),
+                      onPressed: () {
+                        // Clear the text field
+                      },
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[100],
                   ),
+                  keyboardType: TextInputType.text,
+                  textInputAction: TextInputAction.next,
+                  style: TextStyle(fontSize: 16.0, color: Colors.black87),
                 ),
               ),
               SizedBox(height: 10),
@@ -89,41 +129,66 @@ class _AddTaskState extends State<AddTask> {
               Text('Category', style: TextStyle(fontWeight: FontWeight.bold)),
               Row(
                 children: [
-                  Wrap(
-                    runSpacing: 10,
-                    spacing: 5,
-                    children:
-                        taskCategories.map((category) {
-                          return InputChip(
-                            label: Text(category),
-                            selectedColor: Colors.teal,
-                            onSelected: (value) {},
-                          );
-                        }).toList(),
+                  Flexible(
+                    child: Wrap(
+                      alignment: WrapAlignment.start,
+                      runSpacing: 10,
+                      spacing: 5,
+                      children:
+                          taskCategories.map((category) {
+                            return InputChip(
+                              selected: SelectedCategories.contains(category),
+                              selectedShadowColor: Colors.blueGrey,
+                              label: Text(category),
+                              selectedColor: Colors.teal,
+                              onSelected: (value) {
+                                setState(() {
+                                  if (value) {
+                                    SelectedCategories.add(category);
+                                  } else {
+                                    SelectedCategories.remove(category);
+                                  }
+                                });
+                              },
+                            );
+                          }).toList(),
+                    ),
                   ),
-
-                  GestureDetector(
-                    child: Icon(Icons.add, size: 20, color: Colors.teal),
-                    onTap: () {
-                      print('Add tag pressed');
-                    },
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Container(
-                    height: 50,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(
+                          255,
+                          201,
+                          236,
+                          233,
+                        ),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () async {
+                        print("===> Add Tag button tapped");
+                        final newTag = await addNewTag(context);
+                        setState(() {
+                          if (newTag != null) {
+                            taskCategories.add(newTag);
+                            SelectedCategories.add(newTag);
+                          }
+                        });
+                      },
+                      icon: const Icon(Icons.add, weight: 50),
+                      label: const Text(
+                        'ADD',
+                        style: TextStyle(fontWeight: FontWeight.w900),
+                      ),
                     ),
                   ),
                 ],
               ),
+
               SizedBox(height: 20),
               SizedBox(
                 height: 50,

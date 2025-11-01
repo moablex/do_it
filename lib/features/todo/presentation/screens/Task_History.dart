@@ -1,6 +1,7 @@
+import 'package:do_it/features/todo/domain/models/todo.dart';
 import 'package:do_it/features/todo/presentation/widgets/History_calender.dart';
 import 'package:do_it/features/todo/presentation/widgets/History_tile.dart';
-import 'package:do_it/features/todo/presentation/widgets/task_list.dart';
+
 import 'package:flutter/material.dart';
 
 class TaskHistory extends StatelessWidget {
