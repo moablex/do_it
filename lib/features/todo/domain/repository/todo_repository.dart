@@ -10,13 +10,13 @@ abstract class TodoRepository {
 
   //create new task
 
-  Future<void> addTask();
+  Future<void> addTask(Task task);
 
   //Update the existing task
 
-  Future<void> updateTask();
+  Future<void> updateTask(Task task);
 
   //Delete task
 
-  Future<void> deleteTask();
+  Future<void> deleteTask(Task task);
 }
