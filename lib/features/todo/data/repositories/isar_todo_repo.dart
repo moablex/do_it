@@ -42,10 +42,12 @@ class IsarTodoRepo implements TodoRepository {
   //delete tasks
   @override
   Future<void> deleteTask(Task task) async {
-    final isarIdToDelete =
-        await db.collection<IsarTask>().filter().idEqualTo(task.id).deleteAll();
-    if (isarIdToDelete != null) {
-      await db.writeTxn(() => db.collection<IsarTask>().delete(isarIdToDelete));
+    final taskToDelete =
+        await db.collection<IsarTask>().filter().idEqualTo(task.id).findFirst();
+    if (taskToDelete != null) {
+      await db.writeTxn(
+        () => db.collection<IsarTask>().delete(taskToDelete.isarId!),
+      );
     }
   }
 }

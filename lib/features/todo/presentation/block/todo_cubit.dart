@@ -17,21 +17,18 @@ class TodoCubit extends Cubit<List<Task>> {
   //ADD todos
 
   Future<void> addTask(Task task) async {
-    final newTask = Task(
-      id: task.id,
-      title: task.title,
-      description: task.description,
-      isCompleted: false,
-      subTasks: task.subTasks,
-      tags: task.tags,
-      startTime: task.startTime ?? DateTime.now(),
-      endTime: task.endTime,
-      progress: 0.0,
-      reminderTime: task.reminderTime,
-    );
     //save the new task to the repository
-    await todoRepo.addTask(newTask);
+    await todoRepo.addTask(task);
     //Reload
+    loadTOdos();
+  }
+
+  //Update task
+  Future<void> updateTask(Task updatedTask) async {
+    //Persist updated task
+    await todoRepo.updateTask(updatedTask);
+
+    //Reload to update the UI
     loadTOdos();
   }
 
@@ -44,7 +41,7 @@ class TodoCubit extends Cubit<List<Task>> {
   }
 
   //Toggle task
-  Future<void> toggleCompleted(task) async {
+  Future<void> toggleCompleted(Task task) async {
     task.toggleCompleted();
     task.progress = task.calculateProgress();
     //update the todo repo with the toggle status
