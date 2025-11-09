@@ -21,7 +21,7 @@ class IsarTodoRepo implements TodoRepository {
   @override
   Future<List<Task>> getTask() async {
     final allTasks = await db.collection<IsarTask>().where().findAll();
-    return allTasks.map((task) => task.toDOmain()).toList();
+    return allTasks.map((task) => task.toDomain()).toList();
   }
 
   //create tasks
@@ -42,7 +42,10 @@ class IsarTodoRepo implements TodoRepository {
   //delete tasks
   @override
   Future<void> deleteTask(Task task) async {
-    final isarTask = await IsarTask.fromDomain(task);
-    await db.writeTxn(() => db.collection<IsarTask>().delete(isarTask.isarId));
+    final isarIdToDelete =
+        await db.collection<IsarTask>().filter().idEqualTo(task.id).deleteAll();
+    if (isarIdToDelete != null) {
+      await db.writeTxn(() => db.collection<IsarTask>().delete(isarIdToDelete));
+    }
   }
 }
