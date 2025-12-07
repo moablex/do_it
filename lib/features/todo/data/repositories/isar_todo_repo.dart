@@ -5,7 +5,6 @@ This implements domain/repository/todo_repository.dart
 
 It handles creating,retrieving , updating and deliting tasks in the isar databse
 
-
  */
 
 import 'package:do_it/features/todo/data/models/Isar_todo.dart';
