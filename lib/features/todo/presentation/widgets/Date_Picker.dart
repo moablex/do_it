@@ -10,7 +10,7 @@ class DateRangeSelector extends StatefulWidget {
 class _DateRangeSelectorState extends State<DateRangeSelector> {
   DateTimeRange dateRange = DateTimeRange(
     start: DateTime.now(),
-    end: DateTime(2025, 12, 12),
+    end: DateTime(2027, 1, 1),
   );
   @override
   Widget build(BuildContext context) {

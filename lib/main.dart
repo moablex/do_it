@@ -1,9 +1,11 @@
 import 'package:do_it/features/todo/data/models/Isar_todo.dart';
 import 'package:do_it/features/todo/data/repositories/isar_todo_repo.dart';
 import 'package:do_it/features/todo/domain/repository/todo_repository.dart';
+import 'package:do_it/features/todo/presentation/block/todo_cubit.dart';
 import 'package:do_it/features/todo/presentation/screens/home_screen.dart';
 import 'package:do_it/features/todo/presentation/widgets/Navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -16,7 +18,7 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  // This widget is the root of the application.
   @override
   Widget build(BuildContext context) {
     final Future<TodoRepository> repositoryInit = _initializeDatabase();
@@ -53,6 +55,7 @@ class MyApp extends StatelessWidget {
   //Data base initialization
   Future<TodoRepository> _initializeDatabase() async {
     final dir = await getApplicationSupportDirectory();
+
     final isar = await Isar.open([IsarTaskSchema], directory: dir.path);
     // Instantiate and return the repository implementation
     return IsarTodoRepo(isar);
@@ -70,11 +73,20 @@ class MyHomePage extends StatelessWidget {
   final TodoRepository todoRepository;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: TodoBottomNavBar(todoRepo: todoRepository),
+    return BlocProvider(
+      create: (context) => TodoCubit(todoRepository),
+      child: NavigationWrapper(),
+      //bottomNavigationBar: TodoBottomNavBar(todoRepo: todoRepository),
       //body: Center(child: Text("data")),
       // body: SafeArea(child: const HomeScreen()),
       // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+}
+
+class NavigationWrapper extends StatelessWidget {
+  @override
+  Widget build(BuildContext contet) {
+    return const TodoBottomNavBar();
   }
 }
