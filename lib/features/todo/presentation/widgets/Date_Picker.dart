@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class DateRangeSelector extends StatefulWidget {
-  const DateRangeSelector({super.key});
+  final Function(DateTimeRange newRange) assignNewDateRange;
+
+  const DateRangeSelector({super.key, required this.assignNewDateRange});
 
   @override
   State<DateRangeSelector> createState() => _DateRangeSelectorState();
@@ -70,11 +72,12 @@ class _DateRangeSelectorState extends State<DateRangeSelector> {
       initialDateRange: dateRange,
       context: context,
       firstDate: DateTime.now(),
-      lastDate: DateTime(2026, 01, 01),
+      lastDate: DateTime(2027, 01, 01),
     );
     if (newDateTimeRange == null) return;
     setState(() {
       dateRange = newDateTimeRange;
+      widget.assignNewDateRange(newDateTimeRange);
     });
   }
 }

@@ -5,6 +5,7 @@ import 'package:do_it/features/todo/presentation/widgets/addNewTag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
 class AddTask extends StatefulWidget {
   const AddTask({super.key});
@@ -15,10 +16,12 @@ class AddTask extends StatefulWidget {
 
 class _AddTaskState extends State<AddTask> {
   //Variable Initializations for a task class
+  //*********************************************************
+  //*********************************************************
   final _formKey = GlobalKey<FormState>();
   final TextEditingController titleController = TextEditingController();
   final TextEditingController DescriptionController = TextEditingController();
-
+  // List of predefined tag categories
   List<String> taskCategories = [
     'Work',
     'Study',
@@ -26,10 +29,21 @@ class _AddTaskState extends State<AddTask> {
     'Spritual',
     'Spriual',
   ];
+  //List of selected tags from taskCategories
+  List<String> SelectedCategories = [];
   DateTime reminderDate = DateTime.now();
   TimeOfDay reminderTime = TimeOfDay.now();
-  List<String> SelectedCategories = [];
   bool setReminder = false;
+  DateTime? startTime;
+  DateTime? endTime;
+  // A function to update start and end time as it changed
+  void _onDateRangeChanged(DateTimeRange newRange) {
+    setState(() {
+      startTime = newRange.start;
+      endTime = newRange.end;
+    });
+  }
+
   //Reminder Date and Time picker functions
   Future<void> _selectRemiderDate() async {
     final DateTime? remiderDatePicked = await showDatePicker(
@@ -44,6 +58,7 @@ class _AddTaskState extends State<AddTask> {
     }
   }
 
+  //Select reminder time
   Future<void> _selectReminderTime() async {
     final TimeOfDay? pickedReminderTime = await showTimePicker(
       context: context,
@@ -54,6 +69,12 @@ class _AddTaskState extends State<AddTask> {
         reminderTime = pickedReminderTime;
       });
     }
+  }
+
+  //Generate unigue ID for each task
+  final _uuid = Uuid();
+  String _generateTaskId() {
+    return _uuid.v4();
   }
 
   @override
@@ -102,10 +123,11 @@ class _AddTaskState extends State<AddTask> {
                     textInputAction: TextInputAction.next,
                     style: TextStyle(fontSize: 16.0, color: Colors.black87),
                     validator: (value) {
-                      if (value == null) {
-                        return 'Add Title';
-                      } else
-                        return '';
+                      if (value == null || value.isEmpty) {
+                        return 'Please add Title';
+                      } else {
+                        return null;
+                      }
                     },
                   ),
                 ),
@@ -134,15 +156,16 @@ class _AddTaskState extends State<AddTask> {
                     textInputAction: TextInputAction.next,
                     style: TextStyle(fontSize: 16.0, color: Colors.black87),
                     validator: (value) {
-                      if (value == null) {
+                      if (value == null || value.isEmpty) {
                         return 'Describe your task';
-                      } else
-                        return '';
+                      } else {
+                        return null;
+                      }
                     },
                   ),
                 ),
                 SizedBox(height: 10),
-                DateRangeSelector(),
+                DateRangeSelector(assignNewDateRange: _onDateRangeChanged),
 
                 SizedBox(height: 20),
 
@@ -289,10 +312,23 @@ class _AddTaskState extends State<AddTask> {
                     icon: Icon(color: Colors.white, Icons.add),
                     onPressed: () {
                       _formKey.currentState!.validate();
+                      // Combine Date and Time for the Reminder
+                      DateTime? finalReminderDateTime;
+                      if (setReminder) {
+                        //combine the selected reminder date with time
+                        finalReminderDateTime = reminderDate.copyWith(
+                          hour: reminderTime.hour,
+                          minute: reminderTime.minute,
+                        );
+                      }
                       final task = Task(
-                        id: "",
-                        title: titleController.text,
-                        description: DescriptionController.text,
+                        id: _generateTaskId(),
+                        title: titleController.text.trim(),
+                        description: DescriptionController.text.trim(),
+                        isCompleted: false,
+                        tags: SelectedCategories,
+                        subTasks: [],
+                        reminderTime: finalReminderDateTime,
                       );
                       context.read<TodoCubit>().addTask(task);
                     },
