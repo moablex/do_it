@@ -9,56 +9,34 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(const MyApp());
+  // 2. Initialize the database once
+  final dir = await getApplicationSupportDirectory();
+  final isar = await Isar.open([IsarTaskSchema], directory: dir.path);
+  final repository = IsarTodoRepo(isar);
+  runApp(MyApp(todoRepo: repository));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final TodoRepository todoRepo;
+  const MyApp({super.key, required this.todoRepo});
 
   // This widget is the root of the application.
   @override
   Widget build(BuildContext context) {
-    final Future<TodoRepository> repositoryInit = _initializeDatabase();
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       debugShowCheckedModeBanner: false,
-      home: FutureBuilder<TodoRepository>(
-        future: repositoryInit,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasData) {
-              return MyHomePage(
-                title: 'Flutter Demo Home Page',
-                todoRepository: snapshot.data!,
-              );
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Text('Error loading database: ${snapshot.error}'),
-              );
-            }
-            // Show a loading indicator while waiting for the database
-          }
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator(color: Colors.teal)),
-          );
-        },
+      home: MyHomePage(
+        title: 'Flutter Demo Home Page',
+        todoRepository: todoRepo,
       ),
     );
-  }
-
-  //Data base initialization
-  Future<TodoRepository> _initializeDatabase() async {
-    final dir = await getApplicationSupportDirectory();
-
-    final isar = await Isar.open([IsarTaskSchema], directory: dir.path);
-    // Instantiate and return the repository implementation
-    return IsarTodoRepo(isar);
   }
 }
 

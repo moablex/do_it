@@ -21,6 +21,7 @@ class _AddTaskState extends State<AddTask> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController titleController = TextEditingController();
   final TextEditingController DescriptionController = TextEditingController();
+
   // List of predefined tag categories
   List<String> taskCategories = [
     'Work',
@@ -31,11 +32,19 @@ class _AddTaskState extends State<AddTask> {
   ];
   //List of selected tags from taskCategories
   List<String> SelectedCategories = [];
+  DateTime? startTime;
+  DateTime? endTime;
   DateTime reminderDate = DateTime.now();
   TimeOfDay reminderTime = TimeOfDay.now();
   bool setReminder = false;
-  DateTime? startTime;
-  DateTime? endTime;
+  DateTime _selectedDateTime = DateTime.now();
+  List<String> reminderTimesList = [
+    'One Time',
+    'Every Day',
+    'Every Weak',
+    'Every Month',
+  ];
+  String? selectedRepeatTime;
   // A function to update start and end time as it changed
   void _onDateRangeChanged(DateTimeRange newRange) {
     setState(() {
@@ -45,28 +54,36 @@ class _AddTaskState extends State<AddTask> {
   }
 
   //Reminder Date and Time picker functions
-  Future<void> _selectRemiderDate() async {
+  Future<void> _selectReminderDate(BuildContext context) async {
     final DateTime? remiderDatePicked = await showDatePicker(
       context: context,
       firstDate: DateTime.now(),
       lastDate: DateTime(2026),
     );
     if (remiderDatePicked != null && remiderDatePicked != reminderDate) {
-      setState(() {
-        reminderDate = remiderDatePicked;
-      });
+      if (!mounted) return;
+      _selectReminderTime(context, remiderDatePicked);
     }
   }
 
-  //Select reminder time
-  Future<void> _selectReminderTime() async {
+  //Select reminder time after date is being selected
+  Future<void> _selectReminderTime(
+    BuildContext context,
+    DateTime ReminderDate,
+  ) async {
     final TimeOfDay? pickedReminderTime = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: TimeOfDay.fromDateTime(_selectedDateTime),
     );
     if (pickedReminderTime != null && pickedReminderTime != reminderTime) {
       setState(() {
-        reminderTime = pickedReminderTime;
+        _selectedDateTime = DateTime(
+          reminderDate.year,
+          reminderDate.month,
+          reminderDate.day,
+          pickedReminderTime.hour,
+          pickedReminderTime.minute,
+        );
       });
     }
   }
@@ -94,6 +111,7 @@ class _AddTaskState extends State<AddTask> {
         ),
       ),
       body: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
           child: Form(
@@ -189,28 +207,58 @@ class _AddTaskState extends State<AddTask> {
                   visible: setReminder,
                   child: Column(
                     children: [
-                      Row(
-                        children: [
-                          // Date Picker Button
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.teal.shade50,
-                                foregroundColor: Colors.teal,
-                                elevation: 0,
-                              ),
-                              onPressed: () => _selectRemiderDate(),
-                              icon: const Icon(Icons.calendar_today),
-                              label: Text(
-                                DateFormat(
-                                  'EEE, MMM d',
-                                ).format(reminderDate).toString(),
-                              ),
-                            ),
+                      //Remider Date Picker
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          labelText: 'Reminder Time',
+                          prefixIcon: const Icon(Icons.access_time_rounded),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                        ],
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          filled: true,
+                          fillColor: Colors.grey.shade50,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                        ),
+
+                        isExpanded: true, // Makes it take the full width
+                        icon: const Icon(
+                          Icons.arrow_drop_down_circle_outlined,
+                          color: Colors.blue,
+                        ),
+                        elevation: 16,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                        ),
+                        dropdownColor: Colors.white,
+                        borderRadius: BorderRadius.circular(
+                          12,
+                        ), // Rounds the actual menu
+                        value: selectedRepeatTime,
+                        hint: Text('Select Reminder'),
+                        items:
+                            reminderTimesList.map<DropdownMenuItem<String>>((
+                              String value,
+                            ) {
+                              return DropdownMenuItem<String>(
+                                child: Text(value),
+                                value: value,
+                              );
+                            }).toList(),
+                        onChanged: (selectedReminderValue) {
+                          setState(() {
+                            selectedRepeatTime = selectedReminderValue;
+                          });
+                        },
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(height: 10),
                       // Time Picker Button
                       Row(
                         children: [
@@ -220,8 +268,12 @@ class _AddTaskState extends State<AddTask> {
                                 backgroundColor: Colors.teal.shade50,
                                 foregroundColor: Colors.teal,
                                 elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  side: BorderSide(color: Colors.grey.shade300),
+                                ),
                               ),
-                              onPressed: () => _selectReminderTime(),
+                              onPressed: () => _selectReminderDate(context),
                               icon: const Icon(Icons.access_time),
                               label: Text(
                                 reminderTime.format(context).toString(),
@@ -312,15 +364,8 @@ class _AddTaskState extends State<AddTask> {
                     icon: Icon(color: Colors.white, Icons.add),
                     onPressed: () {
                       _formKey.currentState!.validate();
-                      // Combine Date and Time for the Reminder
-                      DateTime? finalReminderDateTime;
-                      if (setReminder) {
-                        //combine the selected reminder date with time
-                        finalReminderDateTime = reminderDate.copyWith(
-                          hour: reminderTime.hour,
-                          minute: reminderTime.minute,
-                        );
-                      }
+
+                      //create the new task object
                       final task = Task(
                         id: _generateTaskId(),
                         title: titleController.text.trim(),
@@ -328,8 +373,14 @@ class _AddTaskState extends State<AddTask> {
                         isCompleted: false,
                         tags: SelectedCategories,
                         subTasks: [],
-                        reminderTime: finalReminderDateTime,
+                        startTime: startTime ?? null,
+                        endTime: endTime ?? null,
+                        reminderTime:
+                            _selectedDateTime != DateTime.now()
+                                ? _selectedDateTime
+                                : null,
                       );
+                      //Save the new task to local storage
                       context.read<TodoCubit>().addTask(task);
                     },
                     label: Text('Add', style: TextStyle(color: Colors.white)),
