@@ -19,8 +19,14 @@ class IsarTodoRepo implements TodoRepository {
   //get tasks
   @override
   Future<List<Task>> getTask() async {
-    final allTasks = await db.collection<IsarTask>().where().findAll();
-    return allTasks.map((task) => task.toDomain()).toList();
+    try {
+      final allTasks = await db.collection<IsarTask>().where().findAll();
+      return allTasks.map((task) => task.toDomain()).toList();
+    } catch (e) {
+      throw Exception(
+        "Could not fetch tasks from database. Please restart the app.",
+      );
+    }
   }
 
   //create tasks

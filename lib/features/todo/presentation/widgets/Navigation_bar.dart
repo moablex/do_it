@@ -17,12 +17,23 @@ class TodoBottomNavBar extends StatefulWidget {
 class _TodoBottomNavBarState extends State<TodoBottomNavBar> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = const [
-    HomeScreen(),
-    AddTask(),
-    TaskHistory(),
-    Settings(),
-  ];
+  List<Widget> _screens = const [];
+  @override
+  void initState() {
+    super.initState();
+    //  Initialize the screens
+    _screens = [
+      const HomeScreen(),
+      //  Pass the callback function to AddTask
+      AddTask(
+        onTaskAdded: () {
+          _onTabTapped(0); // Switch to Home index when a task is added
+        },
+      ),
+      const TaskHistory(),
+      const Settings(),
+    ];
+  }
 
   void _onTabTapped(int index) {
     setState(() {

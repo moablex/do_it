@@ -24,7 +24,9 @@ class TodoCubit extends Cubit<TodoState> {
   Future<void> addTask(Task task) async {
     try {
       await todoRepo.addTask(task);
+      emit(TodoAdditionSuccess('Task Successfully saved ! '));
       final todos = await todoRepo.getTask();
+
       emit(
         TodoLoaded(todos: todos, successMessage: "Task added successfully!"),
       );

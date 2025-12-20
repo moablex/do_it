@@ -1,5 +1,6 @@
 import 'package:do_it/features/todo/domain/models/todo.dart';
 import 'package:do_it/features/todo/presentation/block/todo_cubit.dart';
+import 'package:do_it/features/todo/presentation/block/todo_state.dart';
 import 'package:do_it/features/todo/presentation/widgets/Date_Picker.dart';
 import 'package:do_it/features/todo/presentation/widgets/addNewTag.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,8 @@ import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 class AddTask extends StatefulWidget {
-  const AddTask({super.key});
+  final VoidCallback? onTaskAdded;
+  const AddTask({super.key, this.onTaskAdded});
 
   @override
   State<AddTask> createState() => _AddTaskState();
@@ -96,297 +98,334 @@ class _AddTaskState extends State<AddTask> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.teal,
-        title: Center(
-          child: Text(
-            'Add New Task',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
+    return BlocListener<TodoCubit, TodoState>(
+      listenWhen:
+          (previous, current) =>
+              current is TodoAdditionSuccess || current is TodoAdditionError,
+      listener: (context, state) {
+        if (state is TodoAdditionSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Task saved successfully !'),
+              backgroundColor: Colors.teal,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+          //  Trigger the callback to switch the tab
+          if (widget.onTaskAdded != null) {
+            widget.onTaskAdded!();
+          }
+        } else if (state is TodoAdditionError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Unable to save'),
+              backgroundColor: Colors.redAccent,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.teal,
+          title: Center(
+            child: Text(
+              'Add New Task',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+              ),
             ),
           ),
         ),
-      ),
-      body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    // color: const Color.fromARGB(255, 200, 215, 240),
-                  ),
-                  child: TextFormField(
-                    controller: titleController,
-                    decoration: InputDecoration(
-                      labelText: 'Title',
-                      hintText: 'Physical Exercises',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      prefixIcon: Icon(Icons.title_outlined),
-
-                      filled: true,
-                      fillColor: Colors.grey[100],
+        body: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      // color: const Color.fromARGB(255, 200, 215, 240),
                     ),
-                    keyboardType: TextInputType.text,
-                    textInputAction: TextInputAction.next,
-                    style: TextStyle(fontSize: 16.0, color: Colors.black87),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please add Title';
-                      } else {
-                        return null;
-                      }
-                    },
-                  ),
-                ),
-                SizedBox(height: 20),
-                Container(
-                  // decoration: BoxDecoration(
-                  //   borderRadius: BorderRadius.circular(15),
-                  //   color: const Color.fromARGB(255, 200, 215, 240),
-                  // ),
-                  child: TextFormField(
-                    maxLines: 4,
-                    maxLength: 4,
-                    controller: DescriptionController,
-                    decoration: InputDecoration(
-                      labelText: 'Description',
+                    child: TextFormField(
+                      controller: titleController,
+                      decoration: InputDecoration(
+                        labelText: 'Title',
+                        hintText: 'Physical Exercises',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        prefixIcon: Icon(Icons.title_outlined),
 
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
+                        filled: true,
+                        fillColor: Colors.grey[100],
                       ),
-                      prefixIcon: Icon(Icons.description),
-
-                      filled: true,
-                      fillColor: Colors.grey[100],
-                    ),
-                    keyboardType: TextInputType.text,
-                    textInputAction: TextInputAction.next,
-                    style: TextStyle(fontSize: 16.0, color: Colors.black87),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Describe your task';
-                      } else {
-                        return null;
-                      }
-                    },
-                  ),
-                ),
-                SizedBox(height: 10),
-                DateRangeSelector(assignNewDateRange: _onDateRangeChanged),
-
-                SizedBox(height: 20),
-
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Text('Remind Me'),
-                    Switch(
-                      activeColor: Colors.teal,
-                      value: setReminder,
-                      onChanged: (bool newValue) {
-                        setState(() {
-                          setReminder = newValue;
-                        });
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.next,
+                      style: TextStyle(fontSize: 16.0, color: Colors.black87),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please add Title';
+                        } else {
+                          return null;
+                        }
                       },
                     ),
-                  ],
-                ),
-                Visibility(
-                  visible: setReminder,
-                  child: Column(
-                    children: [
-                      //Remider Date Picker
-                      DropdownButtonFormField<String>(
-                        decoration: InputDecoration(
-                          labelText: 'Reminder Time',
-                          prefixIcon: const Icon(Icons.access_time_rounded),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey.shade300),
-                          ),
-                          filled: true,
-                          fillColor: Colors.grey.shade50,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                        ),
+                  ),
+                  SizedBox(height: 20),
+                  Container(
+                    // decoration: BoxDecoration(
+                    //   borderRadius: BorderRadius.circular(15),
+                    //   color: const Color.fromARGB(255, 200, 215, 240),
+                    // ),
+                    child: TextFormField(
+                      maxLines: 4,
+                      maxLength: 100,
+                      controller: DescriptionController,
+                      decoration: InputDecoration(
+                        labelText: 'Description',
 
-                        isExpanded: true, // Makes it take the full width
-                        icon: const Icon(
-                          Icons.arrow_drop_down_circle_outlined,
-                          color: Colors.blue,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
-                        elevation: 16,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                        ),
-                        dropdownColor: Colors.white,
-                        borderRadius: BorderRadius.circular(
-                          12,
-                        ), // Rounds the actual menu
-                        value: selectedRepeatTime,
-                        hint: Text('Select Reminder'),
-                        items:
-                            reminderTimesList.map<DropdownMenuItem<String>>((
-                              String value,
-                            ) {
-                              return DropdownMenuItem<String>(
-                                child: Text(value),
-                                value: value,
-                              );
-                            }).toList(),
-                        onChanged: (selectedReminderValue) {
+                        prefixIcon: Icon(Icons.description),
+
+                        filled: true,
+                        fillColor: Colors.grey[100],
+                      ),
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.next,
+                      style: TextStyle(fontSize: 16.0, color: Colors.black87),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Describe your task';
+                        } else {
+                          return null;
+                        }
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  DateRangeSelector(assignNewDateRange: _onDateRangeChanged),
+
+                  SizedBox(height: 20),
+
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Text('Remind Me'),
+                      Switch(
+                        activeColor: Colors.teal,
+                        value: setReminder,
+                        onChanged: (bool newValue) {
                           setState(() {
-                            selectedRepeatTime = selectedReminderValue;
+                            setReminder = newValue;
                           });
                         },
-                      ),
-                      const SizedBox(height: 10),
-                      // Time Picker Button
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.teal.shade50,
-                                foregroundColor: Colors.teal,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  side: BorderSide(color: Colors.grey.shade300),
-                                ),
-                              ),
-                              onPressed: () => _selectReminderDate(context),
-                              icon: const Icon(Icons.access_time),
-                              label: Text(
-                                reminderTime.format(context).toString(),
-                              ),
-                            ),
-                          ),
-                        ],
                       ),
                     ],
                   ),
-                ),
-                SizedBox(height: 20),
-                Text('Category', style: TextStyle(fontWeight: FontWeight.bold)),
-                Row(
-                  children: [
-                    Flexible(
-                      child: Wrap(
-                        alignment: WrapAlignment.start,
-                        runSpacing: 10,
-                        spacing: 5,
-                        children:
-                            taskCategories.map((category) {
-                              return InputChip(
-                                selected: SelectedCategories.contains(category),
-                                selectedShadowColor: Colors.blueGrey,
-                                label: Text(category),
-                                selectedColor: Colors.teal,
-                                onSelected: (value) {
-                                  setState(() {
-                                    if (value) {
-                                      SelectedCategories.add(category);
-                                    } else {
-                                      SelectedCategories.remove(category);
-                                    }
-                                  });
-                                },
-                              );
-                            }).toList(),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(
-                            255,
-                            201,
-                            236,
-                            233,
+                  Visibility(
+                    visible: setReminder,
+                    child: Column(
+                      children: [
+                        //Remider Date Picker
+                        DropdownButtonFormField<String>(
+                          decoration: InputDecoration(
+                            labelText: 'Reminder Time',
+                            prefixIcon: const Icon(Icons.access_time_rounded),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade300,
+                              ),
+                            ),
+                            filled: true,
+                            fillColor: Colors.grey.shade50,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
                           ),
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+
+                          isExpanded: true, // Makes it take the full width
+                          icon: const Icon(
+                            Icons.arrow_drop_down_circle_outlined,
+                            color: Colors.blue,
                           ),
+                          elevation: 16,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
+                          dropdownColor: Colors.white,
+                          borderRadius: BorderRadius.circular(
+                            12,
+                          ), // Rounds the actual menu
+                          value: selectedRepeatTime,
+                          hint: Text('Select Reminder'),
+                          items:
+                              reminderTimesList.map<DropdownMenuItem<String>>((
+                                String value,
+                              ) {
+                                return DropdownMenuItem<String>(
+                                  child: Text(value),
+                                  value: value,
+                                );
+                              }).toList(),
+                          onChanged: (selectedReminderValue) {
+                            setState(() {
+                              selectedRepeatTime = selectedReminderValue;
+                            });
+                          },
                         ),
-                        onPressed: () async {
-                          print("===> Add Tag button tapped");
-                          final newTag = await addNewTag(context);
-                          setState(() {
-                            if (newTag != null) {
-                              taskCategories.add(newTag);
-                              SelectedCategories.add(newTag);
-                            }
-                          });
-                        },
-                        icon: const Icon(Icons.add, weight: 50),
-                        label: const Text(
-                          'ADD',
-                          style: TextStyle(fontWeight: FontWeight.w900),
+                        const SizedBox(height: 10),
+                        // Time Picker Button
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.teal.shade50,
+                                  foregroundColor: Colors.teal,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    side: BorderSide(
+                                      color: Colors.grey.shade300,
+                                    ),
+                                  ),
+                                ),
+                                onPressed: () => _selectReminderDate(context),
+                                icon: const Icon(Icons.access_time),
+                                label: Text(
+                                  reminderTime.format(context).toString(),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-
-                SizedBox(height: 20),
-                SizedBox(
-                  height: 50,
-                  width: 300,
-
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      backgroundColor: Colors.teal,
-                    ),
-                    icon: Icon(color: Colors.white, Icons.add),
-                    onPressed: () {
-                      _formKey.currentState!.validate();
-
-                      //create the new task object
-                      final task = Task(
-                        id: _generateTaskId(),
-                        title: titleController.text.trim(),
-                        description: DescriptionController.text.trim(),
-                        isCompleted: false,
-                        tags: SelectedCategories,
-                        subTasks: [],
-                        startTime: startTime ?? null,
-                        endTime: endTime ?? null,
-                        reminderTime:
-                            _selectedDateTime != DateTime.now()
-                                ? _selectedDateTime
-                                : null,
-                      );
-                      //Save the new task to local storage
-                      context.read<TodoCubit>().addTask(task);
-                    },
-                    label: Text('Add', style: TextStyle(color: Colors.white)),
                   ),
-                ),
-              ],
+                  SizedBox(height: 20),
+                  Text(
+                    'Category',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Wrap(
+                          alignment: WrapAlignment.start,
+                          runSpacing: 10,
+                          spacing: 5,
+                          children:
+                              taskCategories.map((category) {
+                                return InputChip(
+                                  selected: SelectedCategories.contains(
+                                    category,
+                                  ),
+                                  selectedShadowColor: Colors.blueGrey,
+                                  label: Text(category),
+                                  selectedColor: Colors.teal,
+                                  onSelected: (value) {
+                                    setState(() {
+                                      if (value) {
+                                        SelectedCategories.add(category);
+                                      } else {
+                                        SelectedCategories.remove(category);
+                                      }
+                                    });
+                                  },
+                                );
+                              }).toList(),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(
+                              255,
+                              201,
+                              236,
+                              233,
+                            ),
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          onPressed: () async {
+                            print("===> Add Tag button tapped");
+                            final newTag = await addNewTag(context);
+                            setState(() {
+                              if (newTag != null) {
+                                taskCategories.add(newTag);
+                                SelectedCategories.add(newTag);
+                              }
+                            });
+                          },
+                          icon: const Icon(Icons.add, weight: 50),
+                          label: const Text(
+                            'ADD',
+                            style: TextStyle(fontWeight: FontWeight.w900),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: 20),
+                  SizedBox(
+                    height: 50,
+                    width: 300,
+
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        backgroundColor: Colors.teal,
+                      ),
+                      icon: Icon(color: Colors.white, Icons.add),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          //create the new task object
+                          final task = Task(
+                            id: _generateTaskId(),
+                            title: titleController.text.trim(),
+                            description: DescriptionController.text.trim(),
+                            isCompleted: false,
+                            tags: SelectedCategories,
+                            subTasks: [],
+                            startTime: startTime ?? null,
+                            endTime: endTime ?? null,
+                            reminderTime:
+                                _selectedDateTime != DateTime.now()
+                                    ? _selectedDateTime
+                                    : null,
+                          );
+                          //Save the new task to local storage
+                          context.read<TodoCubit>().addTask(task);
+                        }
+                      },
+                      label: Text('Add', style: TextStyle(color: Colors.white)),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
