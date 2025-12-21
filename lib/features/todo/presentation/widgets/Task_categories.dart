@@ -27,7 +27,7 @@ class TaskCategoryScroll extends StatelessWidget {
             ),
             child: CategoryCard(
               category: category,
-              onTap: () => onCategorySelected(category.name),
+              onTap: () => onCategorySelected(category.id),
             ),
           );
         },
@@ -103,15 +103,26 @@ class CategoryCard extends StatelessWidget {
 }
 
 class TaskCategory {
+  final String id;
   final String name;
   final IconData icon;
-  final int taskCount;
-  final bool isSelected;
+  final taskCount;
+  final isSelected;
 
   TaskCategory({
+    required this.id,
     required this.name,
     required this.icon,
     required this.taskCount,
     this.isSelected = false,
   });
+  TaskCategory copyWith({bool? isSelected}) {
+    return TaskCategory(
+      id: this.id,
+      name: this.name,
+      icon: this.icon,
+      taskCount: this.taskCount,
+      isSelected: isSelected ?? this.isSelected,
+    );
+  }
 }
