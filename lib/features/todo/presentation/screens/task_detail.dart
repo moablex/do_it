@@ -1,5 +1,6 @@
+import 'package:do_it/features/todo/domain/models/todo.dart';
 import 'package:do_it/features/todo/presentation/widgets/Add_Sub_Task.dart';
-import 'package:do_it/features/todo/presentation/widgets/task_list.dart';
+
 import 'package:flutter/material.dart';
 
 class TaskDetail extends StatefulWidget {

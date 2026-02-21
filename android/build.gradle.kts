@@ -13,6 +13,16 @@ subprojects {
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
 subprojects {
+    project.afterEvaluate {
+        if (name == "isar_flutter_libs") {
+            // Apply the namespace fix using the Kotlin property access syntax
+            extensions.configure<com.android.build.gradle.BaseExtension>("android") {
+                namespace = "dev.isar.isar_flutter_libs"
+            }
+        }
+    }
+}
+subprojects {
     project.evaluationDependsOn(":app")
 }
 

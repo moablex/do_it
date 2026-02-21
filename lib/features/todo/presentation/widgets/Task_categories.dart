@@ -1,3 +1,4 @@
+import 'package:do_it/core/data/app_data.dart';
 import 'package:flutter/material.dart';
 
 class TaskCategoryScroll extends StatelessWidget {
@@ -27,7 +28,7 @@ class TaskCategoryScroll extends StatelessWidget {
             ),
             child: CategoryCard(
               category: category,
-              onTap: () => onCategorySelected(category.name),
+              onTap: () => onCategorySelected(category.id),
             ),
           );
         },
@@ -100,18 +101,4 @@ class CategoryCard extends StatelessWidget {
       ),
     );
   }
-}
-
-class TaskCategory {
-  final String name;
-  final IconData icon;
-  final int taskCount;
-  final bool isSelected;
-
-  TaskCategory({
-    required this.name,
-    required this.icon,
-    required this.taskCount,
-    this.isSelected = false,
-  });
 }
