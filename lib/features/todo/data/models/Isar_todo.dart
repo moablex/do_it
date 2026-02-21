@@ -32,7 +32,7 @@ class IsarSubTask {
 @Collection()
 class IsarTask {
   IsarTask();
-  Id? isarId;
+  Id? isarId = Isar.autoIncrement;
 
   @Index(unique: true)
   late String id;

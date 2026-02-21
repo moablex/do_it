@@ -2,6 +2,7 @@ import 'package:do_it/features/todo/presentation/widgets/task_list.dart';
 import 'package:flutter/material.dart';
 import '../widgets/search_task.dart';
 import '../widgets/Task_categories.dart';
+import '../../../../core/data/app_data.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,33 +12,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<TaskCategory> taskCategories = [
-    TaskCategory(
-      id: 'one',
-      name: 'Work',
-      icon: Icons.work,
-      taskCount: 5,
-      isSelected: true,
-    ),
-    TaskCategory(
-      id: 'Three',
-      name: 'Personal',
-      icon: Icons.person,
-      taskCount: 3,
-    ),
-    TaskCategory(
-      id: 'Two',
-      name: 'Shopping',
-      icon: Icons.shopping_cart,
-      taskCount: 2,
-    ),
-    TaskCategory(
-      id: 'Four',
-      name: 'Health',
-      icon: Icons.favorite,
-      taskCount: 4,
-    ),
-  ];
+  List<TaskCategory> taskCategories = AppData.initialCategory;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
